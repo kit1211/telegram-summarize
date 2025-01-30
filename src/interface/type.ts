@@ -22,5 +22,11 @@ interface From {
     language_code: string | null;
     is_premium: boolean;
 }
+interface RequestWithChatId extends Request {
+    params: { chatId: string };
+}
 
-export type { TelegramMessage, Chat, From };
+
+
+
+export type { TelegramMessage, Chat, From, RequestWithChatId };

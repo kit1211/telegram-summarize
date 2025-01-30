@@ -20,11 +20,11 @@ export async function saveMessage(message : any) {
         update: {},
         create: {
             id          : BigInt(message.from.id),
-            isBot       : message.from.is_bot,
-            firstName   : message.from.first_name,
+            isBot       : message.from.is_bot       || false,
+            firstName   : message.from.first_name   || "",
             lastName    : message.from.last_name    || null,
             username    : message.from.username     || null,
-            languageCode: message.from.language_code || null,
+            languageCode: message.from.language_code|| null,
             isPremium   : message.from.is_premium   || false,
         }
     });
@@ -36,12 +36,12 @@ export async function saveMessage(message : any) {
         create  : {
             chatId: BigInt(message.chat.id),
             title : message.chat.title || "",
-            type  : message.chat.type,
+            type  : message.chat.type  || "",
         }
     });
 
     // บันทึก Message
-    const newMessage = await prisma.message.create({
+    await prisma.message.create({
         data: {
             id       : BigInt(message.message_id),
             chatId   : chat.chatId,

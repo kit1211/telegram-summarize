@@ -6,6 +6,12 @@ const router = express.Router();
 
 
 router.get('/chat/:chatId', async (req, res) => {
+
+    if (!req.params.chatId) {
+        res.status(400).json({ error: 'Chat ID is required' });
+        return;
+    }
+
     const chatId = BigInt(req.params.chatId);
     // ดึงข้อความทั้งหมดจากฐานข้อมูล พร้อมข้อมูล reply
     const messages = await prisma.message.findMany({
