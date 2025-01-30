@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model telegramGroup {
+    id          Int      @id @default(autoincrement()) // Primary Key
+    groupId     BigInt   @unique // Telegram Group ID (ต้องเป็น BigInt)
+    name        String   @db.VarChar(255) // ชื่อกลุ่ม
+    description String?  @db.Text // คำอธิบาย (optional)
+    createdAt   DateTime @default(now()) // วันที่สร้าง
+    updatedAt   DateTime @updatedAt // อัปเดตล่าสุด
+}
+
+model Chat {
+    id        Int      @id @default(autoincrement()) // Primary Key
+    chatId    BigInt   @unique // Telegram Group ID (ต้องกำหนดให้ unique)
+    title     String   @db.VarChar(255) // ชื่อกลุ่ม
+    type      String   @db.VarChar(50) // ประเภท (group, private, supergroup)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    messages Message[] // ความสัมพันธ์แบบ One-to-Many (Chat มีหลาย Messages)
+}
+
+model User {
+    id           BigInt   @id // Telegram User ID (Primary Key)
+    isBot        Boolean // เป็นบอทหรือไม่
+    firstName    String   @db.VarChar(255) // ชื่อ
+    lastName     String?  @db.VarChar(255) // นามสกุล (optional)
+    username     String?  @unique @db.VarChar(255) // Username (optional)
+    languageCode String?  @db.VarChar(10) // ภาษา
+    isPremium    Boolean? // เป็น Telegram Premium หรือไม่
+
+    messages Message[] // ความสัมพันธ์แบบ One-to-Many (User มีหลาย Messages)
+}
+
+model Message {
+    id        BigInt   @id // Message ID จาก Telegram
+    chatId    BigInt   @map("chat_id") // FK ไปยัง Chat
+    userId    BigInt   @map("user_id") // FK ไปยัง User
+    text      String?  @db.Text // เนื้อหาข้อความ
+    timestamp DateTime // เวลาส่งข้อความ
+
+    replyToId BigInt? // FK ไปยัง Message (Self-referencing)
+    replyTo   Message?  @relation("ReplyTo", fields: [replyToId], references: [id]) // ข้อความต้นฉบับ
+    replies   Message[] @relation("ReplyTo") // ข้อความที่ reply มาที่ข้อความนี้
+
+    chat Chat @relation(fields: [chatId], references: [chatId]) // เชื่อมกับ Chat (Many-to-One)
+    user User @relation(fields: [userId], references: [id]) // เชื่อมกับ User (Many-to-One)
+}

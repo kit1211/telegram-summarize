@@ -1,0 +1,28 @@
+{
+  "name": "telegrambot_webhook",
+  "module": "src/app.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/app.ts",
+    "prisma": "prisma generate",
+    "prepare": "bun run prisma",
+    "dev": "bun run --watch src/app.ts"
+  },
+  "prisma": {
+    "schema": "./prisma/schema.prisma"
+},
+  "devDependencies": {
+    "@types/bun": "latest",
+    "prisma": "^6.3.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.3.0",
+    "@types/express": "^5.0.0",
+    "@types/node-telegram-bot-api": "^0.64.7",
+    "express": "^4.21.2",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}
